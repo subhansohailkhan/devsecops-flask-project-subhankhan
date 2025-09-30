@@ -21,6 +21,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 EXPOSE 80
 
+RUN mkdir -p /var/lib/nginx /var/log/nginx /var/run/nginx \
+    && chown -R www-data:www-data /var/lib/nginx /var/log/nginx /var/run/nginx
+    
 USER www-data
 
 CMD ["sh", "-c", "nginx && uwsgi --ini uwsgi.ini"]
