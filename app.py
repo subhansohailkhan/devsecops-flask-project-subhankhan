@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
+import os
 from flask_bootstrap import Bootstrap5
 from flask_ckeditor import CKEditor
 from flask_login import LoginManager
-from flask import Flask, render_template, render_template_string, request, redirect
+from flask import Flask, render_template, request, redirect, abort
 from db_seed import setup_db
 from routes import init
+from markupsafe import escape
 
 # CREATE app FIRST
 app = Flask(__name__)
 
-# THEN configure it
-app.config['SECRET_KEY'] = 'badsecret123'
-app.secret_key = "super secret key"
+# THEN configure it - use environment variable for secret key
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(32).hex())
+app.secret_key = os.environ.get('SECRET_KEY', os.urandom(32).hex())
 app.config["BOOTSTRAP_SERVE_LOCAL"] = True
 app.config["CKEDITOR_SERVE_LOCAL"] = True
 
@@ -30,7 +32,7 @@ def unauthorized():
 
 @app.errorhandler(404)
 def page_not_found(error):
-    detailed_message = render_template_string(
-        f"{error}. Requested URL was {request.path}"
-    )
+    # Fixed SSTI vulnerability - escape user input
+    safe_path = escape(request.path)
+    detailed_message = f"{error}. Requested URL was {safe_path}"
     return render_template("404.html", detailed_message=detailed_message)
