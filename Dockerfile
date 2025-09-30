@@ -1,5 +1,6 @@
 FROM python:3.9-slim-bullseye
 
+# Install system dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
     nginx \
     python3-dev \
@@ -8,12 +9,23 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     uwsgi-plugin-python3 \
  && rm -rf /var/lib/apt/lists/*
 
-COPY conf/nginx.conf /etc/nginx
-COPY --chown=www-data:www-data . /srv/flask_app
+# Set working directory
 WORKDIR /srv/flask_app
 
-RUN pip install -r requirements.txt --src /usr/local/src
+# Copy only requirements first (so Docker caches this layer when code changes)
+COPY requirements.txt .
 
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy project files
+COPY --chown=www-data:www-data . .
+
+# Expose Flask port
+EXPOSE 5000
+
+# Start services
 CMD ["sh", "-c", "service nginx start && uwsgi --ini uwsgi.ini"]
 
-USER root
+# Run as www-data for security
+USER www-data
