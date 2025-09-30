@@ -1,19 +1,26 @@
-FROM python:3.9-slim-buster
+FROM python:3.9-slim-bookworm
 
 RUN apt-get clean \
-    && apt-get -y update
+    && apt-get -y update \
+    && apt-get -y install --no-install-recommends \
+        nginx \
+        python3-dev \
+        build-essential \
+        uwsgi \
+        uwsgi-plugin-python3 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get -y install nginx \
-    && apt-get -y install python3-dev \
-    && apt-get -y install build-essential \
-    && apt-get -y install uwsgi \
-    && apt-get -y install uwsgi-plugin-python3
+COPY conf/nginx.conf /etc/nginx/nginx.conf
 
-COPY conf/nginx.conf /etc/nginx
 COPY --chown=www-data:www-data . /srv/flask_app
 
 WORKDIR /srv/flask_app
-RUN pip install -r requirements.txt --src /usr/local/src
-CMD service nginx start; uwsgi --ini uwsgi.ini
 
-USER root
+RUN pip install --no-cache-dir -r requirements.txt
+
+EXPOSE 80
+
+USER www-data
+
+CMD ["sh", "-c", "nginx && uwsgi --ini uwsgi.ini"]
