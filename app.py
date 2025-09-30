@@ -7,7 +7,7 @@ from db_seed import setup_db
 from routes import init
 
 # CREATE app FIRST
-app = Flask(_name_)
+app = Flask(__name__)
 
 # THEN configure it
 app.config['SECRET_KEY'] = 'badsecret123'
