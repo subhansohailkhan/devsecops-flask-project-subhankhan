@@ -8,6 +8,7 @@ RUN apt-get clean \
         build-essential \
         uwsgi \
         uwsgi-plugin-python3 \
+        libpcre3-dev \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
