@@ -5,7 +5,7 @@ It contains multiple security flaws in both the application code and the Dockerf
 
 ⚠️ **Disclaimer:** Do **not** deploy this app in production. It is meant only for learning and practicing security scanning.
 
----
+--
 ## 🎯 Learning Goals
 
 - Identify and fix **common security flaws** in application code and Docker images  
