@@ -1,0 +1,5 @@
+sonar-scanner \
+  -Dsonar.projectKey=devsecops-flask-project \
+  -Dsonar.sources=. \
+  -Dsonar.host.url=http://localhost:9000 \
+  -Dsonar.token=sqp_0eb0ba555e0d48f7d6465f108545be266a7a92dd
